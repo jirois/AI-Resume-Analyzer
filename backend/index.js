@@ -7,6 +7,9 @@ import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 dotenv.config();
 
+import Logger from "./src/utils/logger.js";
+import routes from "./src/routes/index.js";
+
 // Intialize Express app
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -63,16 +66,16 @@ app.use("*", (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT} in ${process.env.NODE_ENV}`);
+  Logger.info(`Server running on port ${PORT} in ${process.env.NODE_ENV}`);
 });
 
 // Graceful shutdown
 process.on("SIGTERM", () => {
-  logger.info("SIGTERM received. shutting down gracefully...");
+  Logger.info("SIGTERM received. shutting down gracefully...");
   process.exit(0);
 });
 
 process.on("SIGINT", () => {
-  logger.error("MongoDB connection failed:", error.message);
+  Logger.error("MongoDB connection failed:", error.message);
   process.exit(0);
 });
