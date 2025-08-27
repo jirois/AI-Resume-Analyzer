@@ -1,5 +1,5 @@
-const route = () => {
-  console.log("This is route");
-};
+import express from "express";
 
-export default route;
+const router = express.Router();
+
+export default router;
