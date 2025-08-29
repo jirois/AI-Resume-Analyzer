@@ -22,6 +22,9 @@ const logger = {
     const coloredMessage = `${color}${formattedMessage}${logger.colors.reset}`;
 
     switch (level) {
+      case "info":
+        console.info(coloredMessage);
+        break;
       case "error":
         console.error(coloredMessage);
         break;

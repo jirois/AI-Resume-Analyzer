@@ -5,20 +5,14 @@ import morgan from "morgan";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
+import logger from "./src/utils/logger.js";
 dotenv.config();
 
-import connectDB from "./src/configs/database.js";
-import connectRedis from "./src/configs/redis.js";
+import errorHandler from "./src/middleware/error.middleware.js";
 
-import logger from "./src/utils/logger.js";
-
-// Intialize Express app
+// Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 8000;
-
-// Connect to databases
-connectDB();
-connectRedis();
 
 // Global middleware
 app.use(helmet()); // Security headers
@@ -33,7 +27,7 @@ app.use(
 // Rating limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
+  max: 100, // limit each IP to 100 requests per windowMs
   message: "Too many requests from this IP, please try again later.",
 });
 app.use(limiter);
@@ -49,7 +43,6 @@ app.use(
   })
 );
 
-// Health check route
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "OK",
@@ -59,29 +52,22 @@ app.get("/health", (req, res) => {
   });
 });
 
-// API routes
-// app.use("/api", routes);
-
 // 404 handler
-app.use("*", (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: "Route not found",
-  });
-});
 
-// Start server
+// Global error handler
+app.use(errorHandler);
+
 app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT} in ${process.env.NODE_ENV}`);
+  logger.info(`This serve is running on http://localhost:${PORT}`);
 });
 
 // Graceful shutdown
 process.on("SIGTERM", () => {
-  logger.info("SIGTERM received. shutting down gracefully...");
+  logger.info("SIGTERM received. Shutting down gracefully...");
   process.exit(0);
 });
 
 process.on("SIGINT", () => {
-  logger.error("MongoDB connection failed:", error.message);
+  logger.info("SIGINT received. Shutting down gracefully...");
   process.exit(0);
 });
