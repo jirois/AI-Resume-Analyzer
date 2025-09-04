@@ -8,11 +8,17 @@ import dotenv from "dotenv";
 import logger from "./src/utils/logger.js";
 dotenv.config();
 
+import connectDB from "./src/configs/database.js";
+import { connectRedis } from "./src/configs/redis.js";
 import errorHandler from "./src/middleware/error.middleware.js";
 
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 8000;
+
+// connect to databases
+connectDB();
+connectRedis();
 
 // Global middleware
 app.use(helmet()); // Security headers
@@ -62,12 +68,3 @@ app.listen(PORT, () => {
 });
 
 // Graceful shutdown
-process.on("SIGTERM", () => {
-  logger.info("SIGTERM received. Shutting down gracefully...");
-  process.exit(0);
-});
-
-process.on("SIGINT", () => {
-  logger.info("SIGINT received. Shutting down gracefully...");
-  process.exit(0);
-});

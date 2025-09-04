@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import logger from "../utils/logger";
+import logger from "../utils/logger.js";
 
 const connectDB = async () => {
   try {
@@ -18,3 +18,4 @@ const connectDB = async () => {
     process.exit(1);
   }
 };
+export default connectDB;
