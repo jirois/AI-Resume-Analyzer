@@ -1,10 +1,10 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import User from "../models/User";
-import { getRedisClient } from "../configs/redis";
-import emailService from "./email.service";
-import { AppError } from "../utils/helpers";
+import User from "../models/User.js";
+import { getRedisClient } from "../configs/redis.js";
+import emailService from "./email.service.js";
+import { AppError } from "../utils/helpers.js";
 
 class AuthService {
   async register(userData) {

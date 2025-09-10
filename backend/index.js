@@ -10,6 +10,7 @@ dotenv.config();
 
 import connectDB from "./src/configs/database.js";
 import { connectRedis } from "./src/configs/redis.js";
+import routes from "./src/routes/index.js";
 import errorHandler from "./src/middleware/error.middleware.js";
 
 // Initialize Express app
@@ -58,6 +59,9 @@ app.get("/health", (req, res) => {
   });
 });
 
+// API routes
+
+app.use("/api", routes);
 // 404 handler
 
 // Global error handler

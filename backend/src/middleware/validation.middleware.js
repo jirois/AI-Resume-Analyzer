@@ -15,6 +15,39 @@ const validationSchemas = {
       email: Joi.string().email().required(),
       password: Joi.string().required(),
     }),
+    forgotPassword: Joi.object({
+      email: Joi.string().email().required().messages({
+        "string.email": "Please provide a valid email address",
+        "any.required": "Email is required",
+      }),
+    }),
+    resetPassword: Joi.object({
+      token: Joi.string().required().messages({
+        "any.required": "Reset token is required",
+      }),
+      password: Joi.string()
+        .min(8)
+        .max(128)
+        .pattern(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/
+        )
+        .required()
+        .messages({
+          "string.min": "Password must be at least 8 characters long",
+          "string.max": "Password must not exceed 128 characters",
+          "string.pattern.base":
+            "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character",
+          "any.required": "Password is required",
+        }),
+      confirmPassword: Joi.string()
+        .valid(Joi.ref("password"))
+        .required()
+        .messages({
+          "any.only": "Passwords do not match",
+          "any.required": "Password confirmation is required",
+        }),
+    }),
+
     updateProfile: Joi.object({
       firstName: Joi.string().min(1).max(50).optional(),
       lastName: Joi.string().min(1).max(50).optional(),
@@ -73,10 +106,10 @@ const validationSchemas = {
   analysis: {
     create: Joi.object({
       resumeId: Joi.string()
-        .pattern(/^[0-9a-FA-F]{24}$/)
+        .pattern(/^[0-9a-f]{24}$/)
         .required(),
       jobId: Joi.string()
-        .pattern(/^[0-9a-FA-F]{24}$/)
+        .pattern(/^[0-9a-f]{24}$/)
         .required(),
       analysisType: Joi.string()
         .valid("full", "quick", "skills-only", "ats-only", "custom")
@@ -87,7 +120,7 @@ const validationSchemas = {
 
 const validate = (schema) => {
   return (req, res, next) => {
-    const { error } = schema.validate(req.boy, { abortEarly: false });
+    const { error } = schema.validate(req.body, { abortEarly: false });
     if (error) {
       const errors = error.details.map((detail) => ({
         field: detail.path.join("."),
